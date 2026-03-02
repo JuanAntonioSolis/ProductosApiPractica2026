@@ -33,6 +33,8 @@ public class User implements UserDetails {
 
     private String email;
 
+    private String nombre;
+
     //HACER RELACIÓN DE USER Y PEDIDO
     /*
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)

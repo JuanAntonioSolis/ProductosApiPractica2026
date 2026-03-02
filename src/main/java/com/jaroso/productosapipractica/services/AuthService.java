@@ -54,6 +54,9 @@ public class AuthService {
                 List.of(UserAuthority.READ)
         );
 
+        // Set the "nombre" field provided in the DTO (was missing)
+        user.setNombre(userDTO.nombre());
+
         //Comprobar que el username no esté ya en la BBDD
         if (userRepository.findByUsername(userDTO.username()).isPresent()) {
             log.error("El usuario ya existe");
@@ -63,7 +66,7 @@ public class AuthService {
         //Si no existe se inserta en BBDD y devolvemos UserDto
         this.userRepository.save(user);
 
-        return new UserDto(user.getId(), user.getUsername(), user.getEmail());
+        return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getNombre());
     }
 
     /**
