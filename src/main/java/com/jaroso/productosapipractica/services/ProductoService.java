@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ProductoService {
 
     public ProductoDto save(ProductoCreateDto productoDto);
-    public ProductoDto update(ProductoUpdateDto productoDto);
+    public ProductoDto update(ProductoUpdateDto productoDto, Long id);
     public List<ProductoDto> findAll();
     public Optional<ProductoDto> findById(Long id);
     public boolean delete(Long id);

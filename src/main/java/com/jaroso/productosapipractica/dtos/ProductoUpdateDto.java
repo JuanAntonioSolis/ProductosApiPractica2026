@@ -1,4 +1,4 @@
 package com.jaroso.productosapipractica.dtos;
 
-public record ProductoUpdateDto(Long id, String nombre, String descipcion) {
+public record ProductoUpdateDto(String nombre, String descripcion, Integer codigo) {
 }

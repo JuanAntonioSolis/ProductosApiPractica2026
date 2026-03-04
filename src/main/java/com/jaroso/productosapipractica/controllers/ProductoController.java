@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/productos")
+@RequestMapping("/api/productos")
 public class ProductoController {
 
     @Autowired
@@ -50,8 +50,8 @@ public class ProductoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.save(dto));
     }
 
-    @PutMapping
-    public ResponseEntity<ProductoDto> update(@RequestBody ProductoUpdateDto dto) {
-        return ResponseEntity.ok(productoService.update(dto));
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductoDto> update(@RequestBody ProductoUpdateDto dto, @PathVariable Long id) {
+        return ResponseEntity.ok(productoService.update(dto, id));
     }
 }

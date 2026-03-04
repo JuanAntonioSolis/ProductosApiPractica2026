@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/lotes")
+
 public class LoteController {
 
     @Autowired
@@ -24,19 +24,18 @@ public class LoteController {
     @Autowired
     private LoteRepository loteRepository;
 
-    @GetMapping
-    public ResponseEntity<List<Lote>> findAll() {
-        return ResponseEntity.ok(loteRepository.findAll());
+    @GetMapping("/api/productos/{productoId}/lotes")
+    public ResponseEntity<List<LoteDto>> findAllByProducto(@PathVariable Long productoId) {
+        return ResponseEntity.ok(loteService.findAllByProductoId(productoId));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LoteDto> findById(@PathVariable long id){
+    @GetMapping("/api/lotes/{id}")
+    public ResponseEntity<LoteDto> findById(@PathVariable Long id) {
         Optional<LoteDto> loteDto = loteService.findById(id);
-
         return loteDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/lotes/{id}")
     public ResponseEntity<LoteDto> deleteById(@PathVariable long id){
         boolean encontrado = loteService.delete(id);
 
@@ -47,13 +46,13 @@ public class LoteController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<LoteDto> save(@RequestBody LoteCreateDto dto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(loteService.save(dto));
+    @PostMapping("/api/productos/{productoId}/lotes")
+    public ResponseEntity<LoteDto> save(@PathVariable Long productoId, @RequestBody LoteCreateDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(loteService.save(dto, productoId));
     }
 
-    @PutMapping
-    public ResponseEntity<LoteDto> update(@RequestBody LoteUpdateDto dto){
+    @PatchMapping("/api/lotes/{id}/estado")
+    public ResponseEntity<LoteDto> updateEstado(@PathVariable Long id, @RequestBody LoteUpdateDto dto) {
         return ResponseEntity.ok(loteService.update(dto));
     }
 

@@ -30,10 +30,16 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public ProductoDto update(ProductoUpdateDto producto) {
-        Producto productoEntity = productoMapper.updateToEntity(producto);
+    public ProductoDto update(ProductoUpdateDto producto, Long id) {
 
-        return productoMapper.toDto(productoRepository.save(productoEntity));
+        Producto producto1 = productoRepository.findById(id).orElse(null);
+
+        producto1.setNombre(producto.nombre());
+        producto1.setDescripcion(producto.descripcion());
+        producto1.setCodigo(producto.codigo());
+
+
+        return productoMapper.toDto(productoRepository.save(producto1));
     }
 
     @Override

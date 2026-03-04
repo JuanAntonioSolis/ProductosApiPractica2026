@@ -4,10 +4,13 @@ import com.jaroso.productosapipractica.dtos.LoteCreateDto;
 import com.jaroso.productosapipractica.dtos.LoteDto;
 import com.jaroso.productosapipractica.dtos.LoteUpdateDto;
 import com.jaroso.productosapipractica.entities.Lote;
+import com.jaroso.productosapipractica.entities.Producto;
 import com.jaroso.productosapipractica.mappers.LoteMapper;
 import com.jaroso.productosapipractica.repositories.LoteRepository;
+import com.jaroso.productosapipractica.repositories.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,47 +19,61 @@ import java.util.Optional;
 public class LoteServiceImpl implements LoteService {
 
     @Autowired
-    private LoteRepository repo;
+    private LoteRepository loteRepository;
 
     @Autowired
-    private LoteMapper mapper;
+    private ProductoRepository productoRepository;
+
+    @Autowired
+    private LoteMapper loteMapper;
 
     @Override
-    public LoteDto save(LoteCreateDto loteDto) {
-        Lote lote = mapper.loteCreateDtoToEntity(loteDto);
+    @Transactional
+    public LoteDto save(LoteCreateDto dto, Long productoId) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto con id " + productoId + " no encontrado"));
 
-        return mapper.toDto(repo.save(lote));
+        Lote lote = loteMapper.loteCreateDtoToEntity(dto);
+        lote.setProducto(producto);
+
+        return loteMapper.toDto(loteRepository.save(lote));
     }
 
     @Override
-    public LoteDto update(LoteUpdateDto loteDto) {
-        Lote loteEntity = mapper.updateToEntity(loteDto);
+    @Transactional
+    public LoteDto update(LoteUpdateDto dto) {
+        Lote lote = loteRepository.findById(dto.id())
+                .orElseThrow(() -> new RuntimeException("Lote con id " + dto.id() + " no encontrado"));
 
-        return mapper.toDto(repo.save(loteEntity));
-    }
+        // Solo actualizamos el estado, que es lo que pide el PATCH
+        lote.setEstado(dto.estado());
 
-    @Override
-    public List<LoteDto> findAll() {
-        return repo.findAll()
-                .stream()
-                .map(mapper::toDto)
-                .toList();
+        return loteMapper.toDto(loteRepository.save(lote));
     }
 
     @Override
     public Optional<LoteDto> findById(Long id) {
-        return repo.findById(id).map(mapper::toDto);
+        return loteRepository.findById(id).map(loteMapper::toDto);
+    }
+
+    @Override
+    public List<LoteDto> findAllByProductoId(Long productoId) {
+        if (!productoRepository.existsById(productoId)) {
+            throw new RuntimeException("Producto con id " + productoId + " no encontrado");
+        }
+        return loteRepository.findAllByProductoId(productoId)
+                .stream()
+                .map(loteMapper::toDto)
+                .toList();
     }
 
     @Override
     public boolean delete(Long id) {
-        Optional<Lote> lote = repo.findById(id);
-
+        Optional<Lote> lote = loteRepository.findById(id);
         if (lote.isPresent()) {
-            repo.delete(lote.get());
+            loteRepository.delete(lote.get());
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }

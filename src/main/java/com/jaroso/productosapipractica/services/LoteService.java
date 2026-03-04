@@ -9,10 +9,10 @@ import java.util.Optional;
 
 public interface LoteService {
 
-    LoteDto save(LoteCreateDto loteDto);
-    LoteDto update(LoteUpdateDto loteDto);
-    List<LoteDto> findAll();
+    LoteDto save(LoteCreateDto dto, Long productoId);
+    LoteDto update(LoteUpdateDto dto);
     Optional<LoteDto> findById(Long id);
+    List<LoteDto> findAllByProductoId(Long productoId);
     boolean delete(Long id);
 
 }
